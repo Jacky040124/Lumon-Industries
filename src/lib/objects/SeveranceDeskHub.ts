@@ -168,6 +168,81 @@ export class SeveranceDeskHub {
     }
   }
 
+  createDrawerUnit(group: THREE.Group, x: number, y: number, z: number, width: number, depth: number, height: number) {
+    const drawerUnitGroup = new THREE.Group();
+    drawerUnitGroup.position.set(x, y, z);
+
+    // Dimensions
+    const topHeight = height * 0.25;
+    const gapHeight = 0.02; 
+    const bottomHeight = height - topHeight - gapHeight;
+    const radius = 0.02;
+
+    // Shapes
+    const mainShape = this.createRoundedRectShape(width, depth, radius);
+    // Recess the gap layer slightly to create the "handle" look
+    const gapShape = this.createRoundedRectShape(width * 0.95, depth * 0.95, radius);
+
+    // 1. Bottom Drawer
+    const bottomGeo = new THREE.ExtrudeGeometry(mainShape, {
+      depth: bottomHeight,
+      steps: 1,
+      bevelEnabled: false
+    });
+    bottomGeo.rotateX(-Math.PI / 2);
+    
+    const bottomMesh = new THREE.Mesh(bottomGeo, this.material);
+    bottomMesh.position.y = -height / 2; 
+    bottomMesh.castShadow = true;
+    bottomMesh.receiveShadow = true;
+    drawerUnitGroup.add(bottomMesh);
+
+    // 2. Gap (Handle)
+    const gapGeo = new THREE.ExtrudeGeometry(gapShape, {
+      depth: gapHeight,
+      steps: 1,
+      bevelEnabled: false
+    });
+    gapGeo.rotateX(-Math.PI / 2);
+    const gapMesh = new THREE.Mesh(gapGeo, this.darkMaterial);
+    gapMesh.position.y = -height / 2 + bottomHeight;
+    drawerUnitGroup.add(gapMesh);
+
+    // 3. Top Drawer
+    const topGeo = new THREE.ExtrudeGeometry(mainShape, {
+      depth: topHeight,
+      steps: 1,
+      bevelEnabled: false
+    });
+    topGeo.rotateX(-Math.PI / 2);
+    const topMesh = new THREE.Mesh(topGeo, this.material);
+    topMesh.position.y = -height / 2 + bottomHeight + gapHeight;
+    topMesh.castShadow = true;
+    topMesh.receiveShadow = true;
+    drawerUnitGroup.add(topMesh);
+
+    group.add(drawerUnitGroup);
+  }
+
+  createRoundedRectShape(width: number, height: number, radius: number) {
+    const shape = new THREE.Shape();
+    const w = width;
+    const h = height;
+    const r = radius;
+
+    shape.moveTo(-w/2, -h/2 + r);
+    shape.lineTo(-w/2, h/2 - r);
+    shape.quadraticCurveTo(-w/2, h/2, -w/2 + r, h/2);
+    shape.lineTo(w/2 - r, h/2);
+    shape.quadraticCurveTo(w/2, h/2, w/2, h/2 - r);
+    shape.lineTo(w/2, -h/2 + r);
+    shape.quadraticCurveTo(w/2, -h/2, w/2 - r, -h/2);
+    shape.lineTo(-w/2 + r, -h/2);
+    shape.quadraticCurveTo(-w/2, -h/2, -w/2, -h/2 + r);
+
+    return shape;
+  }
+
   createWorkSurfaces() {
     const { DIMENSIONS, HUB } = SEVERANCE_DESK_CONFIG;
 
@@ -210,26 +285,11 @@ export class SeveranceDeskHub {
       desk.receiveShadow = true;
       leafGroup.add(desk);
 
-      const pedestal = new THREE.Mesh(
-        new THREE.BoxGeometry(pedWidth, pedHeight, pedDepth),
-        this.material 
-      );
-      
       const pedX = startX - (pedWidth / 2) - 0.75;
       const pedZ = endZ - (pedDepth / 2);
       const pedY = DIMENSIONS.DESK_HEIGHT - DIMENSIONS.SURFACE_THICKNESS - (pedHeight / 2);
       
-      pedestal.position.set(pedX, pedY, pedZ);
-      pedestal.castShadow = true;
-      pedestal.receiveShadow = true;
-      leafGroup.add(pedestal);
-
-      const drawerLine = new THREE.Mesh(
-        new THREE.BoxGeometry(pedWidth + 0.01, 0.01, pedDepth + 0.01),
-        this.darkMaterial
-      );
-      drawerLine.position.set(pedX, pedY + 0.1, pedZ); 
-      leafGroup.add(drawerLine);
+      this.createDrawerUnit(leafGroup, pedX, pedY, pedZ, pedWidth, pedDepth, pedHeight);
 
       const chair = new Chair(leafGroup);
       const chairX = endX - 0.5;

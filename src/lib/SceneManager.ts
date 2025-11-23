@@ -37,6 +37,10 @@ export class ThreeSceneManager {
   pressedKeys: Set<string> = new Set();
   cameraMoveSpeed: number = 0.1;
   
+  // Auto-spin state
+  isAutoSpinning: boolean = true;
+  autoSpinSpeed: number = 0.2; // Radians per second
+
   isRunning: boolean = false;
   clock: THREE.Clock;
   animationFrameId: number | null = null;
@@ -173,6 +177,13 @@ export class ThreeSceneManager {
     this.setupEventListeners(container);
     
     this.clock = new THREE.Clock();
+
+    // Initialize auto-spin based on dev mode
+    this.isAutoSpinning = !this.devMode;
+    if (this.isAutoSpinning) {
+      this.currentKeyframe = undefined;
+    }
+
     this.start();
     
     window.addEventListener('resize', this.handleResize);
@@ -197,6 +208,12 @@ export class ThreeSceneManager {
       }
       
       if (this.devMode) {
+        return;
+      }
+
+      if (this.isAutoSpinning) {
+        console.log('Click detected, stopping auto-spin and transitioning to FRONT');
+        this.transitionFromSpinToFront();
         return;
       }
 
@@ -334,6 +351,62 @@ export class ThreeSceneManager {
     orientation.setFromRotationMatrix(this.lookAtMatrix);
   }
 
+  transitionFromSpinToFront(duration: number = 2000) {
+    if (!this.isAutoSpinning) return;
+    
+    this.isAutoSpinning = false;
+    this.targetKeyframe = CameraKey.FRONT;
+    this.currentKeyframe = undefined;
+
+    const targetKeyframe = this.keyframeInstances[CameraKey.FRONT];
+    const focalPoint = targetKeyframe.focalPoint;
+    
+    // Calculate current angle and radius
+    const dx = this.cameraPosition.x - focalPoint.x;
+    const dz = this.cameraPosition.z - focalPoint.z;
+    const currentAngle = Math.atan2(dx, dz);
+    const radius = Math.sqrt(dx * dx + dz * dz);
+    
+    // Calculate target angle
+    const targetDx = targetKeyframe.position.x - focalPoint.x;
+    const targetDz = targetKeyframe.position.z - focalPoint.z;
+    let targetAngle = Math.atan2(targetDx, targetDz);
+    
+    // Ensure we spin in the same direction (positive rotation)
+    // Make sure targetAngle is greater than currentAngle
+    while (targetAngle <= currentAngle) {
+      targetAngle += Math.PI * 2;
+    }
+
+    console.log(`[SPIN TRANSITION] Current Angle: ${currentAngle}, Target Angle: ${targetAngle}`);
+
+    // Animate angle
+    const animState = { angle: currentAngle };
+    const spinTween = new TWEEN.Tween(animState)
+      .to({ angle: targetAngle }, duration)
+      .easing(TWEEN.Easing.Cubic.Out)
+      .onUpdate(() => {
+        // Update position based on new angle
+        this.cameraPosition.x = focalPoint.x + radius * Math.sin(animState.angle);
+        this.cameraPosition.z = focalPoint.z + radius * Math.cos(animState.angle);
+        
+        // Update orientation to look at focal point
+        this.lookAtMatrix.lookAt(this.cameraPosition, focalPoint, CAMERA_UP);
+        this.cameraOrientation.setFromRotationMatrix(this.lookAtMatrix);
+      })
+      .onComplete(() => {
+        console.log('[SPIN TRANSITION] Complete');
+        this.currentKeyframe = CameraKey.FRONT;
+        this.targetKeyframe = undefined;
+        
+        // Ensure exact final position/orientation
+        this.cameraPosition.copy(targetKeyframe.position);
+        this.cameraOrientation.copy(this.keyframeOrientations[CameraKey.FRONT]);
+      });
+
+    spinTween.start();
+  }
+
   transitionTo(key: CameraKey, duration: number = 1500) {
     if (this.currentKeyframe === key) {
       console.log(`Already at ${key}, skipping transition`);
@@ -420,6 +493,7 @@ export class ThreeSceneManager {
   setDevMode(enabled: boolean) {
     this.devMode = enabled;
     this.controls.enabled = enabled;
+    this.isAutoSpinning = false; // Always disable auto-spin when toggling dev mode
     
     if (enabled) {
       this.controls.target.copy(this.cameraFocalPoint);
@@ -561,6 +635,27 @@ export class ThreeSceneManager {
       this.cameraPosition.copy(this.keyframeInstances[this.currentKeyframe].position);
       this.cameraFocalPoint.copy(this.keyframeInstances[this.currentKeyframe].focalPoint);
       this.cameraOrientation.copy(this.keyframeOrientations[this.currentKeyframe]);
+    }
+
+    // Handle Auto-Spin
+    if (this.isAutoSpinning && !this.devMode) {
+      const spinAmount = this.autoSpinSpeed * deltaTime;
+      const focalPoint = this.keyframeInstances[CameraKey.FRONT].focalPoint;
+      
+      // Rotate camera position around focal point
+      const dx = this.cameraPosition.x - focalPoint.x;
+      const dz = this.cameraPosition.z - focalPoint.z;
+      
+      const currentAngle = Math.atan2(dx, dz);
+      const newAngle = currentAngle + spinAmount;
+      const radius = Math.sqrt(dx * dx + dz * dz);
+      
+      this.cameraPosition.x = focalPoint.x + radius * Math.sin(newAngle);
+      this.cameraPosition.z = focalPoint.z + radius * Math.cos(newAngle);
+      
+      // Update orientation to look at focal point
+      this.lookAtMatrix.lookAt(this.cameraPosition, focalPoint, CAMERA_UP);
+      this.cameraOrientation.setFromRotationMatrix(this.lookAtMatrix);
     }
 
     this.monkeyScene.update(elapsedTime);

@@ -161,8 +161,10 @@ export const SEVERANCE_ROOM_CONFIG = {
     BASEBOARD: 0x1a1a1a, // Dark trim
   },
   CEILING: {
-    GRID_SIZE: 1.2, // Size of each ceiling tile/panel
-    LIGHT_PANEL_RATIO: 0.6, // Ratio of panel that is the light vs frame
+    GRID_SIZE: 2.4, // Increased from 1.2 to make blocks bigger
+    LIGHT_PANEL_RATIO: 0.85, // Ratio of panel that is the light vs frame
+    BEAM_THICKNESS: 0.15, // Width of the separator beams
+    BEAM_DEPTH: 0.15, // Depth/Height of the separator beams
     EMISSIVE_INTENSITY: 1.0,
   }
 };

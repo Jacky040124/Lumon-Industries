@@ -1,5 +1,5 @@
 import { formatTime } from '@/utils/timeFormatter';
-import { PRESET_DURATIONS } from '@/constants/typing';
+import { PRESET_DURATIONS } from '@/models/constants/typing';
 
 export interface TypingControlsProps {
   leadingWord: string | null;

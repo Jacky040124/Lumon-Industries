@@ -1,10 +1,5 @@
-import words from '@/assets/words.json';
-
-// Create a Set for O(1) lookup
-const wordSet = new Set(words.map((word: string) => word.toLowerCase()));
-
 /**
- * Detects valid English words from the end of a typing stream
+ * Detects valid words from the end of a typing stream
  * Uses a sliding window approach to check trailing sequences
  */
 export function detectWords(text: string): string[] {
@@ -18,8 +13,8 @@ export function detectWords(text: string): string[] {
     // Remove punctuation and convert to lowercase
     const cleanWord = word.toLowerCase().replace(/[^a-z]/g, '');
     
-    // Check if it's a valid word and not empty
-    if (cleanWord.length > 0 && wordSet.has(cleanWord)) {
+    // Check if it's a valid word pattern (2+ letters)
+    if (cleanWord.length >= 2) {
       detectedWords.push(cleanWord);
     }
   }
@@ -40,9 +35,9 @@ export function getLastWord(text: string): string | null {
 }
 
 /**
- * Checks if a word is valid English
+ * Checks if a word is valid (2+ letters, letters only)
  */
 export function isValidWord(word: string): boolean {
   const cleanWord = word.toLowerCase().replace(/[^a-z]/g, '');
-  return cleanWord.length > 0 && wordSet.has(cleanWord);
+  return cleanWord.length >= 2;
 }

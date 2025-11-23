@@ -1,15 +1,18 @@
 .app {
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 4rem 2rem;
+  padding: 2rem;
   overflow-x: hidden;
   box-sizing: border-box;
   position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
 }
 
 .header-controls {
@@ -111,7 +114,7 @@
   gap: 1rem;
   justify-content: center;
   align-items: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 }
 
 .controls-row {
@@ -350,26 +353,54 @@
   border-color: #d0d0d0;
 }
 
+/* --- Main Layout & Paper Sections --- */
+
+.main-layout {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+  flex: 1;
+}
+
+.monkey-section {
+  flex: 1;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align to top to match paper */
+  position: sticky;
+  top: 2rem;
+  padding-top: 1rem; /* Fine tune alignment with paper border */
+}
+
+.paper-section {
+  flex: 1;
+  width: 50%;
+  min-width: 0; /* Prevent flex overflow */
+  display: flex;
+  justify-content: center;
+}
+
 .content {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
   box-sizing: border-box;
 }
 
 .paper-container {
   position: relative;
   perspective: 1000px;
-  max-width: 1200px;
   width: 100%;
+  max-width: 650px; /* Limit paper width for better proportions */
   overflow: hidden;
-  margin: clamp(1.5rem, 3vw, 3rem);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   flex-direction: column;
 }
 
@@ -377,17 +408,15 @@
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  padding: clamp(1rem, 3vw, 2rem);
+  padding: 2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
-  min-height: 600px;
+  min-height: auto; /* Let content define height */
   font-family: 'Times New Roman', Times, serif;
   position: relative;
   transition: transform 0.3s ease;
   overflow: hidden;
   box-sizing: border-box;
-  max-width: 100%;
-  contain: layout;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -401,7 +430,7 @@
 
 .paper-line {
   display: grid;
-  grid-template-columns: repeat(48, 1fr);
+  grid-template-columns: repeat(32, 1fr);
   line-height: 0;
   margin-bottom: 0;
   width: 100%;
@@ -420,7 +449,7 @@
   min-width: 0;
   max-width: 100%;
   text-align: center;
-  font-size: clamp(0.625rem, 1.2vw + 0.5rem, 1rem);
+  font-size: clamp(0.6rem, 1vw, 1.1rem);
   color: #1a1a1a;
   border: 1px solid rgba(0, 0, 0, 0.1);
   position: relative;
@@ -460,6 +489,8 @@
     opacity: 0;
   }
 }
+
+/* Collection */
 
 .collection-hover {
   position: fixed;
@@ -664,6 +695,25 @@
   text-align: center;
   padding: 3rem 2rem;
   font-size: 0.9375rem;
+}
+
+@media (max-width: 1100px) {
+  .main-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+  
+  .monkey-section {
+    flex: none;
+    width: 100%;
+    max-width: 500px;
+    position: static;
+  }
+
+  .paper-section {
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {

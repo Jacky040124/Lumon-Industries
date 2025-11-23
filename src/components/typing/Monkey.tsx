@@ -13,7 +13,7 @@ export default function Monkey({ isTyping, typingSpeed, onKeystroke }: MonkeyPro
     return () => clearInterval(interval);
   }, [isTyping, typingSpeed, onKeystroke]);
 
-  return null; // This component doesn't render anything, it's handled by the parent
+  return null; // This component is just for keystroke generation
 }
 
 /**

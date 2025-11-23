@@ -13,3 +13,11 @@ export interface HighlightedRange {
   end: number;
 }
 
+export interface TypingState {
+  isTyping: boolean;
+  typingStream: string;
+  collection: string[];
+  elapsedTime: number;
+  highlightedRanges: Array<{ start: number; end: number }>;
+}
+

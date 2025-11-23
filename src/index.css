@@ -19,10 +19,15 @@
 
 body {
   margin: 0;
+  padding: 0;
   min-width: 320px;
   min-height: 100vh;
   background-color: #fafafa;
   overflow-x: hidden;
+}
+
+#root {
+  margin-top: 600px; /* Make room for fixed Three.js canvas */
 }
 
 h1, h2, h3, h4, h5, h6 {

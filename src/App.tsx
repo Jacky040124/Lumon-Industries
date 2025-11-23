@@ -1,15 +1,13 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import Monkey from "@/components/typing/Monkey";
 import Collection from "@/components/typing/Collection";
-import Paper from "@/components/typing/Paper";
 import TypingControls from "@/components/typing/TypingControls";
 import Auth from "@/components/auth/Auth";
 import AvatarButton from "@/components/profile/AvatarButton";
 import GitHubStarButton from "@/components/profile/GitHubStarButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { isValidWord } from "@/utils/wordDetector";
-import { usePageCalculation } from "@/hooks/usePageCalculation";
-import { TYPING_SPEED_MS, MAX_WORD_LENGTH } from "@/constants/typing";
+import { TYPING_SPEED_MS, MAX_WORD_LENGTH } from "@/models/constants/typing";
 import type { HighlightedRange } from "@/models/typing";
 import "./App.css";
 
@@ -25,7 +23,6 @@ function App() {
   const [leadingWord, setLeadingWord] = useState<string | null>(null);
   const [highlightedRanges, setHighlightedRanges] = useState<HighlightedRange[]>([]);
   const collectionSetRef = useRef<Set<string>>(new Set());
-  const typingTextRef = useRef<HTMLDivElement>(null);
   const collectionButtonRef = useRef<HTMLDivElement>(null);
   const timerIntervalRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
@@ -36,9 +33,7 @@ function App() {
   const longPressStartTimeRef = useRef<number | null>(null);
   const longPressProgressIntervalRef = useRef<number | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-
-  // Use page calculation hook
-  const { lines, pageStart, isPageFlipping, resetPage, CHARS_PER_LINE } = usePageCalculation(typingStream);
+  const [devMode, setDevMode] = useState(true);
 
   const handleKeystroke = useCallback((char: string) => {
     let newWord: string | null = null;
@@ -155,7 +150,6 @@ function App() {
     setLeadingWord(null);
     setHighlightedRanges([]);
     collectionSetRef.current.clear();
-    resetPage();
     startTimeRef.current = null;
   };
 
@@ -247,6 +241,26 @@ function App() {
     }
   };
 
+  // Bridge state to vanilla Three.js app
+  useEffect(() => {
+    if (window.threeApp) {
+      window.threeApp.updateTypingState({
+        isTyping,
+        typingStream,
+        collection,
+        elapsedTime,
+        highlightedRanges,
+      });
+    }
+  }, [isTyping, typingStream, collection, elapsedTime, highlightedRanges]);
+
+  // Sync dev mode state on mount
+  useEffect(() => {
+    if (window.threeApp) {
+      setDevMode(window.threeApp.getDevMode());
+    }
+  }, []);
+
   // Cleanup timers on unmount
   useEffect(() => {
     return () => {
@@ -276,11 +290,51 @@ function App() {
     return <Auth />;
   }
 
+  const handleToggleDevMode = () => {
+    if (window.threeApp) {
+      const newState = window.threeApp.toggleDevMode();
+      setDevMode(newState);
+    }
+  };
+
   return (
     <div className="app">
       <div className="header-controls">
         <GitHubStarButton repoUrl="https://github.com/Jacky040124/typer-monkey" repoName="typer-monkey" />
         <AvatarButton onModalOpenChange={setIsProfileModalOpen} />
+        <button
+          onClick={handleToggleDevMode}
+          className="dev-mode-button"
+          style={{
+            padding: '0.5rem 0.875rem',
+            fontSize: '0.875rem',
+            backgroundColor: devMode ? '#4caf50' : '#fff',
+            color: devMode ? '#fff' : '#1a1a1a',
+            border: `1px solid ${devMode ? '#4caf50' : '#e0e0e0'}`,
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: '500',
+            transition: 'all 0.2s ease',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+            fontFamily: 'inherit',
+            height: '40px',
+            lineHeight: '1',
+          }}
+          onMouseEnter={(e) => {
+            if (!devMode) {
+              e.currentTarget.style.background = '#f5f5f5';
+              e.currentTarget.style.borderColor = '#d0d0d0';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!devMode) {
+              e.currentTarget.style.background = '#fff';
+              e.currentTarget.style.borderColor = '#e0e0e0';
+            }
+          }}
+        >
+          {devMode ? 'Dev Mode ON' : 'Dev Mode'}
+        </button>
       </div>
       <header className="header">
         <h1>Typer Monkey</h1>
@@ -302,18 +356,12 @@ function App() {
         onDurationSelect={handleDurationSelect}
       />
 
-      <Monkey isTyping={isTyping} typingSpeed={TYPING_SPEED_MS} onKeystroke={handleKeystroke} />
-
-      <Paper
-        lines={lines}
-        pageStart={pageStart}
-        charsPerLine={CHARS_PER_LINE}
-        typingStreamLength={typingStream.length}
-        isTyping={isTyping}
-        isPageFlipping={isPageFlipping}
-        highlightedRanges={highlightedRanges}
-        ref={typingTextRef}
-      />
+      <div className="main-layout">
+        {/* Hidden 2D Monkey for keystroke generation */}
+        <div style={{ position: 'absolute', opacity: 0, pointerEvents: 'none' }}>
+          <Monkey isTyping={isTyping} typingSpeed={TYPING_SPEED_MS} onKeystroke={handleKeystroke} />
+        </div>
+      </div>
 
       {!isProfileModalOpen && <Collection words={collection} ref={collectionButtonRef} />}
     </div>

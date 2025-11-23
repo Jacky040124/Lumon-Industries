@@ -5,8 +5,40 @@
     <link rel="icon" type="image/svg+xml" href="/typer-monkey.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Typer Monkey - Typing Game</title>
+    <style>
+      #three-webgl,
+      #three-css,
+      #three-typing-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 600px;
+        pointer-events: auto;
+      }
+      
+      #three-css {
+        pointer-events: none;
+      }
+      
+      #three-typing-container {
+        position: absolute;
+        left: -9999px;
+      }
+      
+      #root {
+        position: relative;
+        z-index: 100;
+      }
+    </style>
   </head>
   <body>
+    <!-- Three.js Containers (vanilla) -->
+    <div id="three-webgl"></div>
+    <div id="three-css"></div>
+    <div id="three-typing-container"></div>
+    
+    <!-- React App Container -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

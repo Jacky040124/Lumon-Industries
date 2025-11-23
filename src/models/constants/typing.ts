@@ -7,5 +7,5 @@ export const PRESET_DURATIONS = [
 ];
 
 export const TYPING_SPEED_MS = 150;
-export const MAX_WORD_LENGTH = 15;
+export const MAX_WORD_LENGTH = 45;
 

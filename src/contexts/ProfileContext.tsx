@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/services/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Profile, ProfileContextType } from '@/models/profile';
 

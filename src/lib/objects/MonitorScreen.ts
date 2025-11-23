@@ -6,7 +6,7 @@ export class MonitorScreen {
   width: number = 650;  
   height: number = 530;
 
-  position: THREE.Vector3 = new THREE.Vector3(0, 1.05, 0.1); 
+  position: THREE.Vector3 = new THREE.Vector3(0, 1.0, 0.07); 
   scale: number = 0.0022;
   
   containerEl: HTMLDivElement | null = null;

@@ -2,6 +2,16 @@ import * as THREE from 'three';
 import { CameraKey } from '@/models/three';
 import { MONKEY_CONFIG } from '@constants/scene';
 
+type MonkeyPalette = {
+  fur: number;
+  skin: number;
+  shirt: number;
+  hatMain: number;
+  hatBrim: number;
+  hatTop: number;
+  propeller: number;
+};
+
 export class Monkey {
   isTyping: boolean = false;
 
@@ -30,7 +40,7 @@ export class Monkey {
   }
 
   createMonkey() {
-    const colors = {
+    const colors: MonkeyPalette = {
       fur: 0xe0ac69,
       skin: 0xf3d5b2,
       shirt: 0x1a1a1a,
@@ -40,7 +50,7 @@ export class Monkey {
       propeller: 0xffd700
     };
 
-    const materialProps = { roughness: 0.7, metalness: 0.1 };
+    const materialProps: THREE.MeshStandardMaterialParameters = { roughness: 0.7, metalness: 0.1 };
 
     this.createLegs(colors, materialProps);
 
@@ -323,7 +333,7 @@ export class Monkey {
     this.rightHandMesh = rightHand;
   }
 
-  createLegs(colors: any, materialProps: any) {
+  createLegs(colors: MonkeyPalette, materialProps: THREE.MeshStandardMaterialParameters) {
     const legGroupY = 0.45;
 
     this.leftLeg = new THREE.Group();

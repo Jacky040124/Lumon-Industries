@@ -26,10 +26,6 @@ body {
   overflow-x: hidden;
 }
 
-#root {
-  margin-top: 600px; /* Make room for fixed Three.js canvas */
-}
-
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
   font-weight: 600;

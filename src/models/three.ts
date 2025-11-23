@@ -68,7 +68,7 @@ export class BackCloseKeyframe extends CameraKeyframeInstance {
 }
 
 // Global type declarations
-import { ThreeApp } from '@/lib/ThreeApp.tsx';
+import { ThreeApp } from '@/lib/ThreeApp';
 
 declare global {
   interface Window {

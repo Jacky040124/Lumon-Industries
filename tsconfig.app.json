@@ -14,7 +14,7 @@
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
 
     /* Linting */
     "strict": true,
@@ -27,8 +27,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@constants/*": ["./src/models/constants/*"],
-      "@profile/*": ["./src/components/profile/*"]
+      "@constants/*": ["./src/models/constants/*"]
     }
   },
   "include": ["src", "src/lib/supabase.ts"]

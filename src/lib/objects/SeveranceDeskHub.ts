@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { SEVERANCE_DESK_CONFIG } from '@/models/constants/scene';
 import { Chair } from '@/lib/objects/Chair';
 import { Computer } from '@/lib/objects/Computer';
+import { CameraKey } from '@/models/three';
 
 export class SeveranceDeskHub {
   group: THREE.Group;
@@ -9,6 +10,8 @@ export class SeveranceDeskHub {
   material: THREE.MeshStandardMaterial;
   darkMaterial: THREE.MeshStandardMaterial;
   dividerMaterial: THREE.MeshStandardMaterial;
+  
+  mainComputer: Computer | null = null;
 
   constructor(parent: THREE.Object3D) {
     this.group = new THREE.Group();
@@ -35,6 +38,12 @@ export class SeveranceDeskHub {
     this.createHub();
     this.createDividers();
     this.createWorkSurfaces();
+  }
+
+  setViewMode(cameraKey: CameraKey) {
+    if (this.mainComputer) {
+      this.mainComputer.setViewMode(cameraKey);
+    }
   }
 
   createHub() {
@@ -220,13 +229,19 @@ export class SeveranceDeskHub {
       chair.group.rotation.y = -Math.PI / 2;
 
       // Add computer to desk
-      const computer = new Computer(leafGroup);
+      // Only add screen to the first desk
+      const computer = new Computer(leafGroup, i === 0);
       const computerX = startX - (deskWidth / 2);
       const computerZ = startZ + (deskLength * 0.65) - 2; // Place it towards the back of desk
-      const computerY = DIMENSIONS.DESK_HEIGHT + DIMENSIONS.SURFACE_THICKNESS - 0.75;
+      const computerY = DIMENSIONS.DESK_HEIGHT + DIMENSIONS.SURFACE_THICKNESS - 0.8;
       
       computer.group.position.set(computerX, computerY, computerZ);
       computer.group.scale.setScalar(0.85); // Scale down to 85% of original size
+      
+      // Store reference to the main computer (first one with screen)
+      if (i === 0) {
+        this.mainComputer = computer;
+      }
     }
   }
 }

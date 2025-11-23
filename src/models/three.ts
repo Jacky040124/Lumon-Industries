@@ -18,20 +18,20 @@ export interface CameraKeyframe {
 export const keyframes: { [key in CameraKey]: CameraKeyframe } = {
   // Front-of-desk hero shot facing the monkey/dog
   front: {
-    position: new THREE.Vector3(0, 4.8, 8.5),
+    position: new THREE.Vector3(-10, 2.8, 0),
     focalPoint: new THREE.Vector3(0, 1.25, 1.4),
   },
   
   // Over-the-shoulder view from behind the monkey (mid distance)
   backWide: {
-    position: new THREE.Vector3(0, 2.9, -2.2),
-    focalPoint: new THREE.Vector3(0, 1.45, 1.6),
+    position: new THREE.Vector3(-2.44, 1.23, 0.87),
+    focalPoint: new THREE.Vector3(7.76, 0.69, 0.78),
   },
   
   // Tight over-the-shoulder shot focused on the CRT screen
   backClose: {
-    position: new THREE.Vector3(0, 2.1, -0.6),
-    focalPoint: new THREE.Vector3(0, 1.5, 1.75),
+    position: new THREE.Vector3(-1.27, 1.30, 0.84),
+    focalPoint: new THREE.Vector3(8.08, 0.62, 0.60),
   },
 };
 

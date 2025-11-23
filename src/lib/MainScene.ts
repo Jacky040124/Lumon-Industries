@@ -40,6 +40,7 @@ export class MonkeyScene {
 
   setViewMode(cameraKey: CameraKey) {
     // this.monkey.setViewMode(cameraKey);
+    this.deskHub.setViewMode(cameraKey);
   }
 
   setIsTyping(isTyping: boolean) {

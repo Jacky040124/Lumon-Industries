@@ -38,6 +38,8 @@ export class ThreeSceneManager {
   isRunning: boolean = false;
   clock: THREE.Clock;
   animationFrameId: number | null = null;
+  
+  debugOverlay: HTMLElement;
 
   constructor(
     container: HTMLElement, 
@@ -48,6 +50,25 @@ export class ThreeSceneManager {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color('#f7f7f5');
     this.cssScene = new THREE.Scene();
+    
+    // Create Debug Overlay
+    this.debugOverlay = document.createElement('div');
+    Object.assign(this.debugOverlay.style, {
+      position: 'fixed',
+      top: '12px',
+      left: '12px',
+      padding: '10px 12px',
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+      color: '#00ff88',
+      fontFamily: 'monospace',
+      fontSize: '12px',
+      lineHeight: '1.4',
+      pointerEvents: 'none',
+      borderRadius: '6px',
+      whiteSpace: 'pre',
+      zIndex: '9999',
+    });
+    document.body.appendChild(this.debugOverlay);
     
     const aspect = container.clientWidth / container.clientHeight;
     this.camera = new THREE.PerspectiveCamera(35, aspect, 0.1, 1000);
@@ -352,14 +373,35 @@ export class ThreeSceneManager {
       this.camera.up.copy(CAMERA_UP);
     }
     
+    // Update Debug Overlay
+    this.updateDebugOverlay();
+    
     if (this.targetKeyframe && Math.random() < 0.05) {
       console.log('[ANIMATE] Camera actual pos:', this.camera.position.toArray());
     }
 
-    this.rendererManager.render(this.scene, this.cssScene, this.camera);
+    // Pass main scene to CSS renderer as well so hierarchical CSS3DObjects are rendered
+    this.rendererManager.render(this.scene, this.scene, this.camera);
 
     this.animationFrameId = requestAnimationFrame(this.animate);
   };
+
+  private updateDebugOverlay() {
+    if (!this.debugOverlay) return;
+
+    const pos = this.camera.position;
+    const rot = this.camera.rotation;
+    const target = this.controls?.target ?? new THREE.Vector3();
+    const lines = [
+      `Camera Pos : [${pos.x.toFixed(2)}, ${pos.y.toFixed(2)}, ${pos.z.toFixed(2)}]`,
+      `Camera Rot : [${rot.x.toFixed(2)}, ${rot.y.toFixed(2)}, ${rot.z.toFixed(2)}]`,
+      `Camera Aim : [${target.x.toFixed(2)}, ${target.y.toFixed(2)}, ${target.z.toFixed(2)}]`,
+      `Mode       : ${this.devMode ? 'DEV (Free)' : 'Keyframe'}`,
+      `Keyframe   : ${this.currentKeyframe || 'Transitioning'}`
+    ];
+
+    this.debugOverlay.textContent = lines.join('\n');
+  }
 
   handleResize = () => {
     if (!this.rendererManager.webglRenderer.domElement.parentElement) return;
@@ -387,6 +429,11 @@ export class ThreeSceneManager {
     if (this.handleKeyUp) {
       document.removeEventListener('keyup', this.handleKeyUp);
     }
+    
+    if (this.debugOverlay && this.debugOverlay.parentNode) {
+      this.debugOverlay.parentNode.removeChild(this.debugOverlay);
+    }
+    
     this.controls.dispose();
     this.rendererManager.dispose();
     TWEEN.removeAll();
@@ -402,4 +449,3 @@ export class ThreeSceneManager {
     console.log('ThreeSceneManager disposed');
   }
 }
-

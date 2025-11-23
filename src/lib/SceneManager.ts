@@ -255,24 +255,34 @@ export class ThreeSceneManager {
   }
 
   setupLights() {
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    // 1. High Ambient Light for Clinical/Fluorescent look (minimizes dark shadows)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     this.scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    dirLight.position.set(10, 20, 10);
+    // 2. Main Overhead Light (Soft directional shadows)
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(8, 12, 5); // High up, slightly angled
     dirLight.castShadow = true;
+    
+    // Improve shadow quality
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
+    dirLight.shadow.bias = -0.0005;
+    dirLight.shadow.normalBias = 0.02;
+    
+    // Soften the area covered
     dirLight.shadow.camera.near = 0.1;
     dirLight.shadow.camera.far = 50;
-    dirLight.shadow.camera.left = -10;
-    dirLight.shadow.camera.right = 10;
-    dirLight.shadow.camera.top = 10;
-    dirLight.shadow.camera.bottom = -10;
+    dirLight.shadow.camera.left = -15;
+    dirLight.shadow.camera.right = 15;
+    dirLight.shadow.camera.top = 15;
+    dirLight.shadow.camera.bottom = -15;
+    
     this.scene.add(dirLight);
 
-    const fillLight = new THREE.DirectionalLight(0xb0c4de, 0.5);
-    fillLight.position.set(-10, 10, -10);
+    // 3. Cool Fill Light (Reflecting off white walls)
+    const fillLight = new THREE.DirectionalLight(0xddeeff, 0.5);
+    fillLight.position.set(-8, 10, -8);
     this.scene.add(fillLight);
   }
 

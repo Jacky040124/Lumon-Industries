@@ -146,3 +146,23 @@ export const CHAIR_CONFIG = {
     Z: 0.6, // Distance from desk edge
   }
 };
+
+// --- SEVERANCE ROOM CONFIGURATION ---
+export const SEVERANCE_ROOM_CONFIG = {
+  DIMENSIONS: {
+    WIDTH: 24,
+    DEPTH: 24,
+    HEIGHT: 4.5,
+  },
+  COLORS: {
+    CARPET: 0x2d4635, // Iconic dark green carpet
+    WALLS: 0xf4f4f0,  // Off-white clinical walls
+    CEILING: 0xffffff, // Pure white ceiling
+    BASEBOARD: 0x1a1a1a, // Dark trim
+  },
+  CEILING: {
+    GRID_SIZE: 1.2, // Size of each ceiling tile/panel
+    LIGHT_PANEL_RATIO: 0.6, // Ratio of panel that is the light vs frame
+    EMISSIVE_INTENSITY: 1.0,
+  }
+};

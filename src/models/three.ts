@@ -15,7 +15,7 @@ export interface CameraKeyframe {
 }
 
 // Camera keyframe data
-export const keyframes: { [key in CameraKey]: CameraKeyframe } = {
+export const keyframes: { [key in CameraKe  y]: CameraKeyframe } = {
   // Front-of-desk hero shot facing the monkey/dog
   front: {
     position: new THREE.Vector3(-10, 2.8, 0),

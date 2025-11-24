@@ -1,19 +1,12 @@
 # Microdata Refinement Simulator
 
+> _Experience life as a Lumon employee. The work is mysterious and important._  
+
 ![Microdata Refinement Simulator](public/photo.png)
-
-> _Experience life as a Lumon employee._  
-> _The work is mysterious and important._
-
-An immersive Three.js workstation set in the world of **Severance**. Explore your desk on Lumon's severed floor with cinematic camera views, an interactive terminal, and ambient corporate atmosphere.
-
-**⚠️ Disclaimer**: Fan-made project inspired by Apple TV+'s _Severance_. Not affiliated with Apple Inc. or any related parties.
 
 ---
 
 ## Demo
-
-
 
 ![Demo](public/demo.gif)
 
